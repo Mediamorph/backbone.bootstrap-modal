@@ -150,7 +150,7 @@
       var $content = this.$content = $el.find('.modal-body')
 
       //Insert the main content if it's a view
-      if (content && content.$el) {
+      if (content.$el) {
         content.render();
         $el.find('.modal-body').html(content.$el);
       }
@@ -209,18 +209,30 @@
 
           self.trigger('cancel');
         });
+        /*
+         * Fix: include the action just if the modalOption.keyboard is true,
+         * not assuming the action will not be included by Bootstrap. 
+         */
+        if(this.options.modalOptions.keyboard) {
+          var _dismissModal = function dismissModal(e) {
+            e.which == 27 && self.trigger('cancel');
 
-        $(document).one('keyup.dismiss.modal', function (e) {
-          e.which == 27 && self.trigger('cancel');
+            if (self.options.content && self.options.content.trigger) {
+              e.which == 27 && self.options.content.trigger('shown', self);
+            }
+          };
 
-          if (self.options.content && self.options.content.trigger) {
-            e.which == 27 && self.options.content.trigger('shown', self);
-          }
-        });
+          $(document).one('keyup.dismiss.modal', _dismissModal);
+          // 
+          self.$el.on('hide.bs.modal', function() {
+            $(document).off('keyup.dismiss.modal', _dismissModal);
+          });
+          
+        }
       }
 
       this.on('cancel', function() {
-        self.close();
+        self.cancel();
       });
 
       Modal.count++;
@@ -232,7 +244,10 @@
 
       return this;
     },
-
+    /*Cancel the modal*/
+    cancel: function(){
+    	this.close();
+    },
     /**
      * Closes the modal
      */
@@ -261,7 +276,7 @@
       });
 
       $el.modal('hide');
-
+      
       Modal.count--;
     },
 
@@ -282,7 +297,7 @@
 
   //EXPORTS
   //CommonJS
-  if (typeof require == 'function' && typeof module !== 'undefined' && exports) {
+  if (typeof require == 'function' && typeof module !== 'undefined' && typeof exports !== 'undefined') {
     module.exports = Modal;
   }
 
