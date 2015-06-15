@@ -213,7 +213,8 @@
          * Fix: include the action just if the modalOption.keyboard is true,
          * not assuming the action will not be included by Bootstrap. 
          */
-        if(this.options.modalOptions.keyboard) {
+        if(this.options.modalOptions 
+            && this.options.modalOptions.keyboard) {
           var _dismissModal = function dismissModal(e) {
             e.which == 27 && self.trigger('cancel');
 
