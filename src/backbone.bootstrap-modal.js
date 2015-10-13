@@ -12,7 +12,30 @@
  * cancel: The user dismissed the modal
  * ok: The user clicked OK
  */
-(function($, _, Backbone) {
+(function(root, factory) {
+  //EXPORTS
+  //CommonJS
+  if (typeof require == 'function' && typeof module !== 'undefined' && typeof exports !== 'undefined') {
+    var _ = require('underscore');
+    var $ = require('jquery');
+    var Backbone = require('backbone');
+    
+    module.exports = factory($, _, Backbone);
+  }
+
+  //AMD / RequireJS
+  if (typeof define === 'function' && define.amd) {
+    return define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
+      Backbone.BootstrapModal = factory($, _, Backbone);
+    });
+  }
+
+  //Regular; add to Backbone.Bootstrap.Modal
+  else {
+    Backbone.BootstrapModal = factory($, _, Backbone);
+  }
+
+}(this, function($, _, Backbone) {
 
   //Set custom template settings
   var _interpolateBackup = _.templateSettings;
@@ -294,24 +317,6 @@
     //The number of modals on display
     count: 0
   });
-
-
-  //EXPORTS
-  //CommonJS
-  if (typeof require == 'function' && typeof module !== 'undefined' && typeof exports !== 'undefined') {
-    module.exports = Modal;
-  }
-
-  //AMD / RequireJS
-  if (typeof define === 'function' && define.amd) {
-    return define(function() {
-      Backbone.BootstrapModal = Modal;
-    })
-  }
-
-  //Regular; add to Backbone.Bootstrap.Modal
-  else {
-    Backbone.BootstrapModal = Modal;
-  }
-
-})(jQuery, _, Backbone);
+  
+  return Modal;
+}));
